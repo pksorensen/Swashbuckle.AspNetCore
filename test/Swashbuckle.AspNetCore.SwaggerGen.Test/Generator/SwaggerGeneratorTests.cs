@@ -87,18 +87,18 @@ namespace Swashbuckle.AspNetCore.SwaggerGen.Test
             var operation = swagger.Paths["/collection"].Get;
             Assert.NotNull(operation);
             Assert.Empty(operation.Consumes);
-            Assert.Equal(new[] { "application/json", "text/json" }, operation.Produces.ToArray());
+            Assert.Equal(new[] { "application/json", "text/json"}, operation.Produces.ToArray());
             Assert.Null(operation.Deprecated);
             // PUT collection/{id}
             operation = swagger.Paths["/collection/{id}"].Put;
             Assert.NotNull(operation);
-            Assert.Equal(new[] { "application/json", "text/json" }, operation.Consumes.ToArray());
+            Assert.Equal(new[] { "application/json", "text/json", "application/*+json" }, operation.Consumes.ToArray());
             Assert.Empty(operation.Produces.ToArray());
             Assert.Null(operation.Deprecated);
             // POST collection
             operation = swagger.Paths["/collection"].Post;
             Assert.NotNull(operation);
-            Assert.Equal(new[] { "application/json", "text/json" }, operation.Consumes.ToArray());
+            Assert.Equal(new[] { "application/json", "text/json", "application/*+json" }, operation.Consumes.ToArray());
             Assert.Empty(operation.Produces.ToArray());
             Assert.Null(operation.Deprecated);
             // DELETE collection/{id}
@@ -110,7 +110,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen.Test
             // PATCH collection
             operation = swagger.Paths["/collection/{id}"].Patch;
             Assert.NotNull(operation);
-            Assert.Equal(new[] { "application/json", "text/json" }, operation.Consumes.ToArray());
+            Assert.Equal(new[] { "application/json", "text/json", "application/*+json" }, operation.Consumes.ToArray());
             Assert.Empty(operation.Produces.ToArray());
             Assert.Null(operation.Deprecated);
         }
@@ -225,7 +225,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen.Test
             var swagger = subject.GetSwagger("v1");
 
             var param = swagger.Paths["/collection/{param}"].Get.Parameters.First();
-            Assert.Equal(true, param.Required);
+            Assert.True(param.Required);
         }
 
         [Theory]
@@ -238,7 +238,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen.Test
             var swagger = subject.GetSwagger("v1");
 
             var param = swagger.Paths["/collection"].Get.Parameters.First();
-            Assert.Equal(false, param.Required);
+            Assert.False(param.Required);
         }
 
         [Fact]
@@ -550,7 +550,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen.Test
 
             var param = swagger.Paths["/{version}/collection"].Get.Parameters.First();
             Assert.Equal("version", param.Name);
-            Assert.Equal(true, param.Required);
+            Assert.True(param.Required);
         }
 
         [Fact]

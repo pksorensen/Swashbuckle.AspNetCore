@@ -23,6 +23,7 @@ using Moq;
 using Newtonsoft.Json;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.DataAnnotations;
 
 namespace Swashbuckle.AspNetCore.SwaggerGen.Test
 {
@@ -129,9 +130,9 @@ namespace Swashbuckle.AspNetCore.SwaggerGen.Test
         {
             var detailsProviders = new IMetadataDetailsProvider[]
             {
-                new DefaultBindingMetadataProvider(CreateMessageProvider()),
+                new DefaultBindingMetadataProvider(),//CreateMessageProvider()),
                 new DefaultValidationMetadataProvider(),
-                new DataAnnotationsMetadataProvider()
+                new DataAnnotationsMetadataProvider(Options.Create<MvcDataAnnotationsLocalizationOptions>(new MvcDataAnnotationsLocalizationOptions()),null)
             };
 
             var compositeDetailsProvider = new DefaultCompositeMetadataDetailsProvider(detailsProviders);
@@ -140,16 +141,39 @@ namespace Swashbuckle.AspNetCore.SwaggerGen.Test
 
         private static ModelBindingMessageProvider CreateMessageProvider()
         {
-            return new ModelBindingMessageProvider
-            {
-                MissingBindRequiredValueAccessor = name => $"A value for the '{ name }' property was not provided.",
-                MissingKeyOrValueAccessor = () => $"A value is required.",
-                ValueMustNotBeNullAccessor = value => $"The value '{ value }' is invalid.",
-                AttemptedValueIsInvalidAccessor = (value, name) => $"The value '{ value }' is not valid for { name }.",
-                UnknownValueIsInvalidAccessor = name => $"The supplied value is invalid for { name }.",
-                ValueIsInvalidAccessor = value => $"The value '{ value }' is invalid.",
-                ValueMustBeANumberAccessor = name => $"The field { name } must be a number.",
-            };
+            return new MyModelBindingMessageProvider();
         }
+    }
+
+    public class MyModelBindingMessageProvider : ModelBindingMessageProvider
+    {
+        private Func<object, string> _ValueMustNotBeNullAccessor;
+        private Func<object, object, string> _AttemptedValueIsInvalidAccessor;
+        private Func<object, string> _UnknownValueIsInvalidAccessor;
+        private Func<object, string> _MissingBindRequiredValueAccessor;
+        private Func<string> _MissingKeyOrValueAccessor;
+        private Func<object, string> _ValueIsInvalidAccessor;
+        private Func<object, string> _ValueMustBeANumberAccessor;
+
+        public MyModelBindingMessageProvider()
+        {
+            _MissingBindRequiredValueAccessor = name => $"A value for the '{ name }' property was not provided.";
+            _MissingKeyOrValueAccessor = () => $"A value is required.";
+            _ValueMustNotBeNullAccessor = value => $"The value '{ value }' is invalid.";
+            _AttemptedValueIsInvalidAccessor = (value, name) => $"The value '{ value }' is not valid for { name }.";
+            _UnknownValueIsInvalidAccessor = name => $"The supplied value is invalid for { name }.";
+            _ValueIsInvalidAccessor = value => $"The value '{ value }' is invalid.";
+            _ValueMustBeANumberAccessor = name => $"The field { name } must be a number.";
+        }
+
+        public override Func<string, string, string> AttemptedValueIsInvalidAccessor => _AttemptedValueIsInvalidAccessor;
+        public override Func<string, string> MissingBindRequiredValueAccessor => _MissingBindRequiredValueAccessor;
+        public override Func<string> MissingKeyOrValueAccessor => _MissingKeyOrValueAccessor;
+   //     public override Func<string> MissingRequestBodyRequiredValueAccessor => _MissingRequestBodyRequiredValueAccessor;
+        public override Func<string, string> UnknownValueIsInvalidAccessor => _UnknownValueIsInvalidAccessor;
+        public override Func<string, string> ValueIsInvalidAccessor => _ValueIsInvalidAccessor;
+        public override Func<string, string> ValueMustBeANumberAccessor => _ValueMustBeANumberAccessor;
+        public override Func<string, string> ValueMustNotBeNullAccessor => _ValueMustNotBeNullAccessor;
+       
     }
 }

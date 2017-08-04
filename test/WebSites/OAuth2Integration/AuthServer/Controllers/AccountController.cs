@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using IdentityServer4.Services.InMemory;
+
 using IdentityServer4;
+using IdentityServer4.Test;
 
 namespace OAuth2Integration.AuthServer.Controllers
 {
@@ -9,9 +10,9 @@ namespace OAuth2Integration.AuthServer.Controllers
     [Route("account")]
     public class AccountController : Controller
     {
-        private readonly InMemoryUserLoginService _loginService;
+        private readonly TestUserStore _loginService;
 
-        public AccountController(InMemoryUserLoginService loginService)
+        public AccountController(TestUserStore loginService)
         {
             _loginService = loginService;
         }

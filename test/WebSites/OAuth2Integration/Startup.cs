@@ -32,13 +32,19 @@ namespace OAuth2Integration
             services.AddIdentityServer()
                 .AddInMemoryClients(AuthServer.Config.Clients())
                 .AddInMemoryApiResources(AuthServer.Config.ApiResources())
-                .AddInMemoryUsers(AuthServer.Config.Users())
-                .AddTemporarySigningCredential();
+                .AddTestUsers(AuthServer.Config.Users())
+                .AddDeveloperSigningCredential();
+
             services.Configure<IdentityServerOptions>(c =>
             {
-                c.AuthenticationOptions.AuthenticationScheme = "Cookies";
+              //  c.Authentication.AuthenticationScheme = "Cookies";
+              //  c.AuthenticationOptions.AuthenticationScheme = "Cookies";
             });
 
+            services.AddIdentityServerAuthentication((options)=>
+            {
+
+            });
             // Configure named auth policies that map directly to OAuth2.0 scopes
             services.AddAuthorization(c =>
             {
@@ -85,10 +91,10 @@ namespace OAuth2Integration
 
             app.Map("/auth-server", authServer =>
             {
-                authServer.UseCookieAuthentication(new CookieAuthenticationOptions
-                {
-                    AuthenticationScheme = "Cookies"
-                });
+                //authServer.UseCookieAuthentication(new CookieAuthenticationOptions
+                //{
+                //    AuthenticationScheme = "Cookies"
+                //});
 
                 authServer.UseIdentityServer();
                 authServer.UseMvc();
@@ -96,11 +102,12 @@ namespace OAuth2Integration
 
             app.Map("/resource-server", resourceServer =>
             {
-                resourceServer.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
-                {
-                    Authority = "http://localhost:50581/auth-server/",
-                    RequireHttpsMetadata = false
-                });
+                resourceServer.UseIdentityServerAuthentication();
+            //new IdentityServerAuthenticationOptions
+            //    {
+            //        Authority = "http://localhost:50581/auth-server/",
+            //        RequireHttpsMetadata = false
+            //    });
 
                 resourceServer.UseMvc();
 

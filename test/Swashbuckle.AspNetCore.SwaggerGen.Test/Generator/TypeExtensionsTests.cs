@@ -29,10 +29,10 @@ namespace Swashbuckle.AspNetCore.SwaggerGen.Test
             Assert.Equal(expectedReturnValue, systemType.FriendlyId(true));
         }
 
-        [Fact(Skip = "Need to figure out dependencies for using [EnumMemberAttribute] in Core")]
-        public void GetEnumNamesForSerialization_HonorsEnumMemberAttributes()
-        {
-            throw new NotImplementedException();
-        }
+        //[Fact(Skip = "Need to figure out dependencies for using [EnumMemberAttribute] in Core")]
+        //public void GetEnumNamesForSerialization_HonorsEnumMemberAttributes()
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }
